@@ -1,0 +1,27 @@
+---
+# tasks file for kubernetes_network
+- name: Install Calico network plugin
+  ansible.builtin.shell: su - $ANSIBLE_USER -c "kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.29.1/manifests/calico.yaml"
+
+- name: Taint master node to prevent workload scheduling
+  ansible.builtin.shell: su - $ANSIBLE_USER -c "kubectl taint nodes cluster-1-master-1 node-role.kubernetes.io/master=:NoSchedule"
+
+- name: Apply BGP configuration
+  ansible.builtin.shell: su - $ANSIBLE_USER -c "kubectl apply -f /root/k8s/calico-BGP-configuration/bgpconf.yaml"
+
+- name: Apply Route Reflector
+  ansible.builtin.shell: su - $ANSIBLE_USER -c "kubectl apply -f /root/k8s/calico-BGP-configuration/bgp-route-refloector.yaml"
+
+- name: Apply BGP neighborship with VyOS router
+  ansible.builtin.shell: su - $ANSIBLE_USER -c "kubectl apply -f /root/k8s/calico-BGP-configuration/router-peer.yaml"
+
+- name: Annotation for Route Reflector
+  ansible.builtin.shell: su - $ANSIBLE_USER -c "kubectl annotate node cluster-1-master-1 projectcalico.org/RouteReflectorClusterID=244.0.0.1"
+
+- name: Lable for Route Reflector
+  ansible.builtin.shell: su - $ANSIBLE_USER -c "kubectl label node cluster-1-master-1 route-reflector=true"
+
+- name: Patch for Route Reflector
+  ansible.builtin.shell: >
+    su - $ANSIBLE_USER -c 'calicoctl patch bgpconfiguration default -p "{\"spec\": {\"nodeToNodeMeshEnabled\": false}}"'
+

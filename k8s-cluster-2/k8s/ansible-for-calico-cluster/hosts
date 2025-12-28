@@ -1,0 +1,9 @@
+[master_nodes]
+cluster-2-master-1 ansible_host=10.200.0.201
+
+[worker_nodes]
+cluster-2-worker-1 ansible_host=10.200.0.202
+cluster-2-worker-2 ansible_host=10.200.0.203
+
+[all:vars]
+ansible_python_interpreter=/usr/bin/python3

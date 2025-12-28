@@ -1,0 +1,15 @@
+---
+# tasks file for kubernetes_metal_lb
+- name: Install Metal-LB
+  ansible.builtin.shell: su - $ANSIBLE_USER -c "kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.15.2/config/manifests/metallb-native.yaml"
+
+- name: Create Metal-LB Cluster Pool IP
+  ansible.builtin.shell: su - $ANSIBLE_USER -c "kubectl apply -f /root/k8s/Metal-LB/cluster-2-metal-lb-pool.yaml"
+  register: metallb_pool_apply
+  until: metallb_pool_apply.rc == 0
+  retries: 20
+  delay: 30
+
+- name: Publish the Metal-LB Cluster Pool IP Using Calico
+  ansible.builtin.shell: su - $ANSIBLE_USER -c "kubectl apply -f /root/k8s/Metal-LB/calico-advertise-cluster-2-pool.yaml"
+

@@ -1,0 +1,17 @@
+---
+# tasks file for kubernetes_create_contexts
+- name: Create PKI Directory On Remote Cluster
+  ansible.builtin.shell: su - $ANSIBLE_USER -c "ssh root@cluster-2-master-1 mkdir -p /etc/kubernetes/pki/"
+
+- name: Copy CA Cert To Remote Cluster
+  ansible.builtin.shell: su - $ANSIBLE_USER -c "scp /etc/kubernetes/pki/ca.crt root@cluster-2-master-1:/etc/kubernetes/pki/cluster-1-ca.crt"
+
+- name: Copy apiserver-kubelet-client.crt To Remote Cluster
+  ansible.builtin.shell: su - $ANSIBLE_USER -c "scp /etc/kubernetes/pki/apiserver-kubelet-client.crt root@cluster-2-master-1:/etc/kubernetes/pki/cluster-1-apiserver-kubelet-client.crt"
+
+- name: Copy apiserver-kubelet-client.key To Remote Cluster
+  ansible.builtin.shell: su - $ANSIBLE_USER -c "scp /etc/kubernetes/pki/apiserver-kubelet-client.key root@cluster-2-master-1:/etc/kubernetes/pki/cluster-1-apiserver-kubelet-client.key"
+
+- name: Overwrite the k8s admin.conf With Predefine Template to Enable the Contexts
+  ansible.builtin.shell: su - $ANSIBLE_USER -c "mv /root/k8s/ansible-for-calico-cluster/k8s-contexts-template.conf /etc/kubernetes/admin.conf"
+
