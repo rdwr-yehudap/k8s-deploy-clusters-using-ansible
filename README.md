@@ -411,4 +411,6 @@ This Ansible configuration is part of the Kubernetes multi-cluster deployment pr
 
 ## Author Information
 
-Maintained by the DevOps team for Kubernetes cluster deployment and management.
+For internal purpose.
+Maintained by the ASE team.
+
